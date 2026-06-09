@@ -1,0 +1,42 @@
+[Unit]
+Description=ThermVate AI HVAC Orchestrator
+Documentation=https://github.com/TheRandyBee/thermvate
+After=network-online.target mosquitto.service influxdb.service
+Wants=network-online.target mosquitto.service influxdb.service
+
+[Service]
+Type=simple
+User=thermvate
+Group=thermvate
+
+Environment=THERMVATE_CONFIG=/etc/thermvate/config.yaml
+Environment=THERMVATE_DATA=/var/lib/thermvate
+Environment=PYTHONUNBUFFERED=1
+
+WorkingDirectory=/home/thermvate/thermvate
+ExecStart=/home/thermvate/venv/bin/python -m orchestrator.src.main
+
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/thermvate /var/log/thermvate /etc/thermvate
+PrivateTmp=true
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+
+# Resource limits
+LimitNOFILE=65536
+CPUQuota=50%
+MemoryMax=512M
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
