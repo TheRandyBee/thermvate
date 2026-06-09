@@ -1,0 +1,120 @@
+# ThermVate ESP32 Sensor Node
+# ESPHome YAML Configuration
+# Flash via: esphome run thermvate-sensor.yaml
+
+substitutions:
+  name: "thermvate-zone1"     # Change per node: zone2, zone3, outdoor
+  room: "Living Room"         # Friendly name
+  update_interval: "30s"      # How often to read sensors
+
+esphome:
+  name: ${name}
+  platform: ESP32
+  board: nodemcu-32s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  # Fallback hotspot for first-time setup
+  ap:
+    ssid: "${name} Fallback"
+    password: !secret ap_password
+
+# Enable OTA updates
+ota:
+  password: !secret ota_password
+
+# Web server for debugging
+web_server:
+  port: 80
+
+# MQTT
+mqtt:
+  broker: 192.168.1.100  # Your orchestrator's IP
+  port: 1883
+  topic_prefix: thermvate/${name}
+  discovery: true
+  discovery_prefix: homeassistant
+
+# I²C for BME280
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+# Sensors
+sensor:
+  - platform: bme280
+    address: 0x76
+    temperature:
+      name: "${room} Temperature"
+      id: zone_temp
+      unit_of_measurement: "°F"
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average:
+            window_size: 6
+            send_every: 6
+      on_value_range:
+        - above: 100
+          then:
+            - mqtt.publish:
+                topic: thermvate/${name}/alarm
+                payload: "HIGH_TEMP"
+        - below: 32
+          then:
+            - mqtt.publish:
+                topic: thermvate/${name}/alarm
+                payload: "LOW_TEMP"
+    humidity:
+      name: "${room} Humidity"
+      id: zone_humidity
+      accuracy_decimals: 0
+      filters:
+        - sliding_window_moving_average:
+            window_size: 6
+            send_every: 6
+    pressure:
+      name: "${room} Pressure"
+      id: zone_pressure
+      accuracy_decimals: 0
+
+  # Optional: CO₂ sensor (Senseair S8)
+  - platform: senseair
+    id: zone_co2
+    name: "${room} CO2"
+    unit_of_measurement: "ppm"
+    update_interval: 60s
+    filters:
+      - sliding_window_moving_average:
+          window_size: 3
+          send_every: 3
+
+  # Optional: mmWave presence (LD2410 via UART)
+  - platform: ld2410
+    presence:
+      name: "${room} Presence"
+    moving_distance:
+      name: "${room} Moving Distance"
+
+# Binary sensors
+binary_sensor:
+  # Optional: PIR motion
+  - platform: gpio
+    pin: GPIO16
+    name: "${room} Motion"
+    device_class: motion
+    filters:
+      - delayed_on_off: 200ms
+
+# Status LED
+status_led:
+  pin: GPIO2  # Built-in LED on most dev boards
+
+# Deep sleep between readings (battery-powered nodes only)
+# Comment out for USB-powered nodes
+# deep_sleep:
+#   run_duration: 10s
+#   sleep_duration: 60s

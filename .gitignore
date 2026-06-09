@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.so
+.venv/
+venv/
+
+# Environment / secrets
+.env
+secrets.yaml
+
+# Sensor data / databases
+*.db
+*.sqlite
+influxdb_data/
+
+# Model artifacts (large binary files)
+models/*.pkl
+models/*.joblib
+models/*.onnx
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# ESPHome secrets (user-specific)
+!firmware/secrets.yaml  # Example only, not actual secrets
