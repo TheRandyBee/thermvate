@@ -1,0 +1,154 @@
+# ThermVate Orchestrator Configuration
+# Copy to /etc/thermvate/config.yaml or set THERMVATE_CONFIG env var
+
+# ─── General ─────────────────────────────────────────────────
+orchestrator:
+  name: "home-ai-lab"
+  log_level: "INFO"              # DEBUG, INFO, WARNING, ERROR
+  optimization_interval_s: 60    # How often optimization engine runs
+  influx_enabled: true
+
+# ─── Zones ───────────────────────────────────────────────────
+# Define each thermal zone. Zone names become MQTT topics.
+zones:
+  - name: "living_room"
+    label: "Living Room"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors:
+      temp_humidity: true        # BME280
+      co2: false                 # MH-Z19B
+      motion: true               # PIR or LD2410
+
+  - name: "bedroom_1"
+    label: "Primary Bedroom"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors:
+      temp_humidity: true
+      co2: false
+      motion: true
+
+  - name: "kitchen"
+    label: "Kitchen"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors:
+      temp_humidity: true
+      co2: true
+      motion: true
+
+# ─── MQTT ────────────────────────────────────────────────────
+mqtt:
+  broker: "localhost"            # Mosquitto broker address
+  port: 1883
+  username: ""                   # Leave blank for anonymous
+  password: ""
+  topic_prefix: "thermvate"     # All sensor topics under thermvate/<zone>/<sensor>
+  client_id: "thermvate-orch"
+  reconnect_delay_s: 5
+
+# ─── Hardware Abstraction Layer ─────────────────────────────
+# Choose ONE interface type: "bacnet", "modbus", or "dry_contact"
+hal:
+  type: "bacnet"                 # Change to match your equipment
+
+  # ── BACnet (via BAC0 + CWCVT) ──
+  bacnet:
+    cwcvt_ip: "192.168.1.50"    # CWCVT's IP on your WiFi
+    bacnet_port: 47808           # Default BACnet/IP UDP port
+    device_instance: 18001       # Your equipment's BACnet device instance
+    mstp_baud: 38400             # Must match CWCVT config
+    poll_interval_s: 30          # How often to read BACnet points
+
+    # Point map: ThermVate abstract name → BACnet object mapping
+    points:
+      supply_air_temp:
+        object_type: "analog-input"
+        instance: 1
+        property: "presentValue"
+        unit: "°F"
+      return_air_temp:
+        object_type: "analog-input"
+        instance: 2
+        property: "presentValue"
+        unit: "°F"
+      outdoor_air_temp:
+        object_type: "analog-input"
+        instance: 3
+        property: "presentValue"
+        unit: "°F"
+      space_temp:
+        object_type: "analog-input"
+        instance: 4
+        property: "presentValue"
+        unit: "°F"
+      cooling_setpoint:
+        object_type: "analog-output"
+        instance: 1
+        property: "presentValue"
+        writable: true
+        unit: "°F"
+      heating_setpoint:
+        object_type: "analog-output"
+        instance: 2
+        property: "presentValue"
+        writable: true
+        unit: "°F"
+      compressor_y1:
+        object_type: "binary-output"
+        instance: 1
+        property: "presentValue"
+      compressor_y2:
+        object_type: "binary-output"
+        instance: 2
+        property: "presentValue"
+      fan_g:
+        object_type: "binary-output"
+        instance: 3
+        property: "presentValue"
+
+  # ── Modbus (alternative) ──
+  modbus:
+    port: "/dev/ttyUSB0"
+    baudrate: 9600
+    parity: "N"
+    stopbits: 1
+    unit_id: 1
+    poll_interval_s: 30
+
+  # ── Dry Contact (fallback) ──
+  dry_contact:
+    relay_pins: [17, 18, 19]     # BCM GPIO pins for heat/cool/fan
+    coil_deadband_f: 2.0         # Temp swing before toggling
+
+# ─── InfluxDB ────────────────────────────────────────────────
+influxdb:
+  url: "http://localhost:8086"
+  token: ""                      # Leave blank for v1 compatibility
+  org: "thermvate"
+  bucket: "thermvate_data"
+  retention_days: 90
+
+  # v1 fallback (if no token)
+  v1:
+    database: "thermvate"
+    username: ""
+    password: ""
+
+# ─── Safety ──────────────────────────────────────────────────
+safety:
+  min_setpoint_f: 60
+  max_setpoint_f: 80
+  min_stage_interval_s: 300      # 5 min between any stage change
+  min_on_time_s: 180
+  min_off_time_s: 300
+  supply_air_max_f: 130
+  supply_air_min_f: 45
+
+# ─── Weather (optional, for model input) ─────────────────────
+weather:
+  provider: "open-meteo"         # Free, no API key needed
+  latitude: 43.0
+  longitude: -78.0
+  poll_interval_min: 15
