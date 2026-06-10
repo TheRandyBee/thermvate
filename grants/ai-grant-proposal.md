@@ -16,7 +16,7 @@ This proposal asks for funding to expand and harden a **working MVP** that alrea
 |-------------|--------|--------|
 | Orchestrator with async lifecycle | ✅ Done | MQTT ingestion, BAC0 integration, graceful shutdown |
 | MQTT sensor bridge | ✅ Done | ESPHome ingestion, auto-parse, alarm routing |
-| BACnet interface via CWCVT | ✅ Done | BAC0 read/write, point discovery, equipment profiles |
+| BACnet interface via CWCVT (or equivalent) | ✅ Done | BAC0 read/write, point discovery, equipment profiles |
 | Hardware Abstraction Layer | ✅ Done | Unified API over BACnet/Modbus/dry-contact |
 | InfluxDB time-series storage | ✅ Done | v1 + v2, write + query |
 | Safety enforcer | ✅ Done | Setpoint bounds, staging rate limits, supply air checks |
@@ -76,7 +76,7 @@ ThermVate is an equipment-agnostic AI orchestrator that runs on a Raspberry Pi 5
 | Occupancy prediction | Simple motion-based absence | ML patterns + multi-sensor |
 | Open source | ❌ Proprietary | ✅ MIT |
 | Local-only AI | ❌ Cloud required | ✅ Fully offline |
-| BAS integration (BACnet) | ❌ | ✅ Native via BAC0 + CWCVT |
+| BAS integration (BACnet) | ❌ | ✅ Native via BAC0 + BACnet bridge |
 
 ---
 
@@ -105,7 +105,7 @@ ThermVate is an equipment-agnostic AI orchestrator that runs on a Raspberry Pi 5
 │          SENSOR / ACTUATOR LAYER             │
 │  ESP32 nodes (T/RH/CO2/motion)              │
 │  Existing thermostat / BAS controller        │
-│  CWCVT (BACnet MS/TP → WiFi bridge)         │
+│  CWCVT (or alternative BACnet bridge)         │
 │  Relay board for legacy 24V equipment        │
 └─────────────────────────────────────────────┘
 ```
@@ -166,7 +166,7 @@ ThermVate is an equipment-agnostic AI orchestrator that runs on a Raspberry Pi 5
 |----------|--------|---------|
 | Compute hardware | $500 | RPi 5, NVMe hat, case, PSU |
 | Sensor deployment | $800 | 10× ESP32 + BME280, enclosures |
-| BACnet interface | $200 | CWCVT or compatible MSTP router |
+| BACnet interface | $200 | CWCVT or alternative MSTP router (access at work, may purchase) |
 | Relay/actuator hardware | $300 | Dry-contact relays, wire, connectors |
 | Cloud GPU (model training) | $1,000 | Lambda/runpod for model development |
 | Cloud GPU (CI/CD inference tests) | $500 | Automated regression on real data |
@@ -208,7 +208,7 @@ ThermVate is an equipment-agnostic AI orchestrator that runs on a Raspberry Pi 5
 
 Most modern residential HVAC equipment (anything with a communicating thermostat or zoning system) has a BACnet MS/TP port — the same protocol used in commercial buildings. It exposes hundreds of data points: supply air temp, return air temp, compressor stages, outdoor air damper position, leaving water temp, defrost state, error codes, runtime hours. Manufacturers deliberately hide these behind proprietary thermostats — but the BACnet port is right there on the control board.
 
-ThermVate uses the open-source BAC0 Python library to discover and read these points over BACnet/IP via a $50 wireless MS/TP bridge (CWCVT). This means it can talk to equipment from Johnson Controls, Carrier, Trane, Lennox, Daikin, Rheem, and dozens more — all without a single wire splice or proprietary adapter.
+ThermVate uses the open-source BAC0 Python library to discover and read these points over BACnet/IP via a wireless MS/TP bridge like the CWCVT (access at work, may need to purchase one or find an alternative). This means it can talk to equipment from Johnson Controls, Carrier, Trane, Lennox, Daikin, Rheem, and dozens more — all without a single wire splice or proprietary adapter.
 
 ---
 

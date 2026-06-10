@@ -7,7 +7,7 @@ This guide walks you through setting up the ThermVate orchestrator on a Raspberr
 - Raspberry Pi 5 (4GB+) running **Raspberry Pi OS Lite** (64-bit, Bookworm)
 - MicroSD card (32GB+ recommended) or NVMe SSD
 - Network connectivity (WiFi or Ethernet)
-- CWCVT wireless MSTP router configured and on your network
+- CWCVT wireless MS/TP router configured and on your network (access at work — may need to purchase one or use a direct RS-485 adapter as an alternative)
 - ESP32 sensor nodes (optional but recommended)
 
 ## Automated Setup
@@ -165,7 +165,7 @@ journalctl -u thermvate -f
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
 | `MQTT connection failed` | Mosquitto not running | `sudo systemctl restart mosquitto` |
-| `BACnet connection failed` | CWCVT not reachable | `ping 192.168.1.50` (your CWCVT IP) |
+| `BACnet connection failed` | BACnet bridge (CWCVT or alternative) not reachable | `ping <bridge_ip>` (e.g., `ping 192.168.1.50` for CWCVT) |
 | `Device X not found` | Wrong device instance | Run point discovery script above |
 | No sensor data | ESP32 not on WiFi or wrong topic | Check `mosquitto_sub -t 'thermvate/#'` |
 | InfluxDB write errors | Wrong token or DB not created | Run `sudo influx setup` |
@@ -174,15 +174,15 @@ journalctl -u thermvate -f
 ## Architecture Diagram (Quick Reference)
 
 ```
-┌──────────────────────────────────────┐
-│  RPi 5                               │
-│                                      │
-│  thermvate.service  ────►  InfluxDB  │
-│       │                              │
-│       │ MQTT (local)                 │
-│       ▼                              │
-│  Mosquitto Broker  ◄── ESP32 sensors │
-│       │                              │
-│  BAC0 ──► CWCVT ──► Equipment       │
-└──────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  RPi 5                                        │
+│                                               │
+│  thermvate.service  ────────►  InfluxDB      │
+│       │                                       │
+│       │ MQTT (local)                          │
+│       ▼                                       │
+│  Mosquitto Broker  ◄────── ESP32 sensors      │
+│       │                                       │
+│  BAC0 ──► CWCVT (or alternative) ──► Equipment│
+└─────────────────────────────────────────────┘
 ```

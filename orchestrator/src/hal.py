@@ -27,7 +27,7 @@ class HardwareAbstractionLayer:
     Unified interface to HVAC equipment.
 
     Supports three backends:
-    - 'bacnet' — BAC0 over BACnet/IP via CWCVT
+    - 'bacnet' — BAC0 over BACnet/IP via CWCVT (or equivalent BACnet bridge)
     - 'modbus' — minimalmodbus over RS-485 (stub)
     - 'dry_contact' — GPIO relay control (stub)
 

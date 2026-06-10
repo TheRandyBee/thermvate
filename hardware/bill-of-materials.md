@@ -34,10 +34,11 @@ Choose ONE based on what your HVAC equipment supports:
 
 | Item | Est. Cost | Notes |
 |------|-----------|-------|
-| CWCVT Wireless MSTP Router | Already own | BACnet MS/TP ←→ WiFi bridge |
+| CWCVT Wireless MS/TP Router | ~$200 | BACnet MS/TP ←→ WiFi bridge (access at work, may purchase) |
 | Option: Babel Buster Pro | $400 | Alternative BACnet gateway |
+| Direct RS-485 adapter | $15 | FTDI USB-to-RS485 for direct MS/TP serial (no CWCVT needed) |
 | RJ12 / 3-pin terminal cable | $10 | MS/TP connection |
-| **Subtotal** | **$10** (if CWCVT owned) | |
+| **Subtotal** | **$15–$210** | Depending on chosen interface |
 
 ### Modbus (for VRF systems, chiller plants, heat pumps with Modbus)
 
@@ -73,14 +74,13 @@ Choose ONE based on what your HVAC equipment supports:
 ```
 Compute               $127
 3x Light sensor       $ 15
-BACnet interface      $ 10 (CWCVT owned)
+BACnet interface      $15–$210 (see equipment interface section)
 Wiring & misc         $ 20
                        ─────
-Total                 $172
+Total                 $162–$357
 ```
 
 ## Total System Cost (3-zone, Dry Contact, full sensors)
-
 ```
 Compute               $127
 3x Full sensor        $105
@@ -90,4 +90,4 @@ Wiring & misc         $ 25
 Total                 $289
 ```
 
-Both well under $300 — cheaper than a single Nest thermostat and infinitely more capable.
+Both under **$300 for dry contact** or **$162–$357 for BACnet** — cheaper than a single Nest thermostat and infinitely more capable.

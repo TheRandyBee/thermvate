@@ -1,5 +1,5 @@
-# DACnet production config — Copy this to docker/config.bacnet.yaml and
-# set your real CWCVT IP, BACnet device instance, and zones.
+# BACnet production config — Copy this to docker/config.bacnet.yaml and
+# set your BACnet bridge IP (CWCVT or equivalent), device instance, and zones.
 orchestrator:
   name: "thermvate-bacnet"
   log_level: "INFO"
@@ -32,7 +32,7 @@ mqtt:
 hal:
   type: "bacnet"
   bacnet:
-    cwcvt_ip: "192.168.1.50"       # ⚠️  SET YOUR CWCVT IP
+    cwcvt_ip: "192.168.1.50"       # BACnet bridge IP (CWCVT at work — may purchase)
     bacnet_port: 47808
     device_instance: 18001         # ⚠️  SET YOUR EQUIPMENT DEVICE INSTANCE
     mstp_baud: 38400

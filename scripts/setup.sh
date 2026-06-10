@@ -176,7 +176,7 @@ clone_repo() {
         chown "$THERMVATE_USER:$THERMVATE_USER" \
            "$THERMVATE_CONFIG_DIR/config.yaml"
         warn "EDIT THIS FILE: $THERMVATE_CONFIG_DIR/config.yaml"
-        warn "  Set your CWCVT IP, BACnet device instance, zones, etc."
+        warn "  Set your BACnet bridge IP (CWCVT or equivalent), device instance, zones, etc."
     else
         ok "Config already exists at $THERMVATE_CONFIG_DIR/config.yaml"
     fi
@@ -465,7 +465,7 @@ print_summary() {
     echo ""
     echo "  ── Next Steps ──"
     echo "  1. EDIT $THERMVATE_CONFIG_DIR/config.yaml"
-    echo "     with your CWCVT IP, BACnet device, zones"
+    echo "     with your BACnet bridge IP (CWCVT or equivalent), zones"
     echo ""
     echo "  2. Start the orchestrator:"
     echo "     sudo systemctl start thermvate"

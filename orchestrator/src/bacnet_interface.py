@@ -2,10 +2,10 @@
 ThermVate — BACnet Interface via BAC0
 
 Reads equipment data and writes setpoints over BACnet/IP through
-a CWCVT wireless MS/TP bridge.
+a BACnet bridge (CWCVT wireless MS/TP bridge — access at work, may purchase).
 
 Uses the BAC0 open-source Python library (bacpypes under the hood).
-BACnet MS/TP → CWCVT bridge → WiFi → BACnet/IP → BAC0 → ThermVate
+BACnet MS/TP → BACnet bridge → WiFi → BACnet/IP → BAC0 → ThermVate
 """
 
 import logging
@@ -32,7 +32,7 @@ class BACnetPoint:
 
 class BACnetInterface:
     """
-    Reads and writes HVAC equipment points via BAC0 + CWCVT BACnet/IP bridge.
+    Reads and writes HVAC equipment points via BAC0 + BACnet/IP bridge (CWCVT or equivalent).
 
     Usage:
         bacnet = BACnetInterface(config)
@@ -49,7 +49,7 @@ class BACnetInterface:
         """
         Args:
             config: HAL config dict with 'bacnet' key containing:
-                - cwcvt_ip: CWCVT IP address
+                - cwcvt_ip: BACnet bridge IP (CWCVT or equivalent)
                 - device_instance: BACnet device instance of the equipment
                 - poll_interval_s: seconds between poll cycles
             on_data: callback(point_name, value, unit) for each read
@@ -82,19 +82,19 @@ class BACnetInterface:
 
     def connect(self) -> bool:
         """
-        Initialize BAC0 connection via CWCVT BACnet/IP.
+        Initialize BAC0 connection via BACnet bridge (CWCVT or equivalent).
 
         BAC0.connect() creates a BACnet/IP virtual device on the local
-        network. The CWCVT bridges between BACnet/IP (WiFi) and the
+        network. The bridge converts between BACnet/IP (WiFi) and the
         equipment's MS/TP bus.
         """
         try:
             import bac0
 
             # BAC0 registers a local virtual BACnet device on our network.
-            # It discovers the CWCVT and equipment via BACnet/IP broadcasts.
+            # It discovers the bridge and equipment via BACnet/IP broadcasts.
             logger.info(
-                f"Connecting BAC0 via CWCVT at {self.cwcvt_ip}:{self.bacnet_port}"
+                f"Connecting BAC0 via BACnet bridge at {self.cwcvt_ip}:{self.bacnet_port}"
             )
             self._bacnet = bac0.connect(
                 ip=self.cwcvt_ip,
