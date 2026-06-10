@@ -1,0 +1,164 @@
+# ───────────────────────────────────────────────────────────
+# ThermVate — Docker Compose (Local Dev Stack)
+# ───────────────────────────────────────────────────────────
+# Start:    docker compose up -d
+# Stop:     docker compose down
+# Logs:     docker compose logs -f orchestrator
+# Shell:    docker compose exec orchestrator bash
+#
+# This runs the full ThermVate stack locally on your machine
+# for development/testing — no RPi or sensors required.
+# Includes a sensor simulator to generate fake data.
+# ───────────────────────────────────────────────────────────
+# For BACnet access (needs host networking on Linux):
+#   docker compose -f docker-compose.yml -f docker-compose.bacnet.yml up -d
+# ───────────────────────────────────────────────────────────
+
+services:
+  # ─── MQTT Broker ────────────────────────────────────────
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: thermvate-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"       # MQTT
+      - "9001:9001"       # MQTT over WebSocket (for Grafana)
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - thermvate-net
+
+  # ─── Time-Series Database ───────────────────────────────
+  influxdb:
+    image: influxdb:2.7
+    container_name: thermvate-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: thermvate
+      DOCKER_INFLUXDB_INIT_PASSWORD: thermvate123
+      DOCKER_INFLUXDB_INIT_ORG: thermvate
+      DOCKER_INFLUXDB_INIT_BUCKET: thermvate_data
+      DOCKER_INFLUXDB_INIT_RETENTION: 90d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: thermvate-dev-token
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - ./docker/influxdb/scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - thermvate-net
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ─── Grafana Dashboards ─────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.0
+    container_name: thermvate-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: thermvate
+      GF_SECURITY_ADMIN_PASSWORD: thermvate
+      GF_INSTALL_PLUGINS: ""
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    networks:
+      - thermvate-net
+
+  # ─── ThermVate Orchestrator ─────────────────────────────
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thermvate-orchestrator
+    restart: unless-stopped
+    # Host networking for BACnet/IP (UDP broadcast on 47808).
+    # Comment out for non-BACnet development — standard bridge
+    # is fine for MQTT-only testing.
+    # network_mode: ${ORCHESTRATOR_NETWORK:-bridge}
+    ports:
+      - "8000:8000"       # Health check / API (fastapi)
+    environment:
+      THERMVATE_CONFIG: /etc/thermvate/config.yaml
+      THERMVATE_DATA: /var/lib/thermvate
+      PYTHONUNBUFFERED: 1
+      # Service discovery via Docker DNS
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: thermvate-dev-token
+      INFLUXDB_ORG: thermvate
+      INFLUXDB_BUCKET: thermvate_data
+    volumes:
+      # Mount the whole repo for live code reload during dev
+      - ./orchestrator:/app/orchestrator:ro
+      - ./docker/config.dev.yaml:/etc/thermvate/config.yaml:ro
+      - thermvate_data:/var/lib/thermvate
+    depends_on:
+      mosquitto:
+        condition: service_started
+      influxdb:
+        condition: service_healthy
+    networks:
+      - thermvate-net
+    command: >
+      sh -c "
+        echo 'Waiting for MQTT...' &&
+        until nc -z mosquitto 1883; do sleep 1; done &&
+        echo 'MQTT ready.' &&
+        echo 'Waiting for InfluxDB...' &&
+        until nc -z influxdb 8086; do sleep 1; done &&
+        echo 'InfluxDB ready.' &&
+        echo 'Starting ThermVate orchestrator...' &&
+        exec python -m orchestrator.src.main
+      "
+
+  # ─── Sensor Simulator (development only) ────────────────
+  # Generates fake ESP32 sensor data to MQTT so you can
+  # test the full pipeline without physical sensors.
+  sensor-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thermvate-simulator
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: 1883
+      SIM_INTERVAL_SEC: 10
+      SIM_ZONES: "living_room,bedroom_1,kitchen,basement"
+    depends_on:
+      mosquitto:
+        condition: service_started
+    networks:
+      - thermvate-net
+    command: >
+      sh -c "
+        echo 'Waiting for MQTT...' &&
+        until nc -z mosquitto 1883; do sleep 1; done &&
+        echo 'Starting sensor simulator...' &&
+        exec python -m orchestrator.src.utils.sensor_simulator
+      "
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
+  influxdb_data:
+  grafana_data:
+  thermvate_data:
+
+networks:
+  thermvate-net:
+    driver: bridge

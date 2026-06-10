@@ -28,6 +28,7 @@ from .mqtt_bridge import MqttBridge
 from .hal import HardwareAbstractionLayer
 from .influx_writer import InfluxConfig, InfluxWriter
 from .safety import SafetyEnforcer
+from .health_api import set_orchestrator, start_health_api
 
 logger = logging.getLogger("thermvate")
 
@@ -160,6 +161,10 @@ class ThermVateOrchestrator:
             f"ThermVate v0.1.0 starting — "
             f"{orch_cfg.get('name', 'unnamed')}"
         )
+
+        # Health API (Docker health checks)
+        start_health_api()
+        set_orchestrator(self)
 
         # InfluxDB
         self.influx = InfluxWriter(InfluxConfig(**{

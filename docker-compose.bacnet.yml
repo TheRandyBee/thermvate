@@ -1,0 +1,36 @@
+# ThermVate — Docker Compose BACnet Override
+# ───────────────────────────────────────────────────────────
+# BACnet/IP uses UDP broadcast (port 47808) for device
+# discovery and communication. This requires host networking
+# on Linux, which gives the orchestrator direct access to
+# your physical network interfaces.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.bacnet.yml up -d
+# ───────────────────────────────────────────────────────────
+# ⚠️  Caution: host networking disables Docker's network
+#    isolation for the orchestrator container. Only use this
+#    when you need real BACnet access via CWCVT.
+# ───────────────────────────────────────────────────────────
+
+services:
+  orchestrator:
+    network_mode: "host"
+    ports: []                # Host networking exposes all ports
+    environment:
+      # BACnet config — set your CWCVT IP here
+      THERMVATE_CONFIG: /etc/thermvate/config.bacnet.yaml
+    depends_on:
+      mosquitto:
+        condition: service_started
+      influxdb:
+        condition: service_healthy
+    networks: []             # Host networking, no bridge
+    volumes:
+      - ./orchestrator:/app/orchestrator:ro
+      - ./docker/config.bacnet.yaml:/etc/thermvate/config.yaml:ro
+      - thermvate_data:/var/lib/thermvate
+
+volumes:
+  thermvate_data:
+    external: true

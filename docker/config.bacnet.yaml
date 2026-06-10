@@ -1,0 +1,71 @@
+# DACnet production config — Copy this to docker/config.bacnet.yaml and
+# set your real CWCVT IP, BACnet device instance, and zones.
+orchestrator:
+  name: "thermvate-bacnet"
+  log_level: "INFO"
+  optimization_interval_s: 60
+  influx_enabled: true
+
+zones:
+  - name: "living_room"
+    label: "Living Room"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors: { temp_humidity: true, co2: false, motion: true }
+  - name: "bedroom_1"
+    label: "Primary Bedroom"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors: { temp_humidity: true, co2: false, motion: true }
+  - name: "kitchen"
+    label: "Kitchen"
+    min_setpoint_f: 62
+    max_setpoint_f: 80
+    sensors: { temp_humidity: true, co2: true, motion: true }
+
+mqtt:
+  broker: "localhost"              # Host networking → localhost
+  port: 1883
+  topic_prefix: "thermvate"
+  client_id: "thermvate-orch"
+
+hal:
+  type: "bacnet"
+  bacnet:
+    cwcvt_ip: "192.168.1.50"       # ⚠️  SET YOUR CWCVT IP
+    bacnet_port: 47808
+    device_instance: 18001         # ⚠️  SET YOUR EQUIPMENT DEVICE INSTANCE
+    mstp_baud: 38400
+    poll_interval_s: 30
+    points:
+      supply_air_temp:  { object_type: "analog-input", instance: 1, property: "presentValue", unit: "°F" }
+      return_air_temp:  { object_type: "analog-input", instance: 2, property: "presentValue", unit: "°F" }
+      outdoor_air_temp: { object_type: "analog-input", instance: 3, property: "presentValue", unit: "°F" }
+      space_temp:       { object_type: "analog-input", instance: 4, property: "presentValue", unit: "°F" }
+      cooling_setpoint: { object_type: "analog-output", instance: 1, property: "presentValue", writable: true, unit: "°F" }
+      heating_setpoint: { object_type: "analog-output", instance: 2, property: "presentValue", writable: true, unit: "°F" }
+      compressor_y1:    { object_type: "binary-output", instance: 1, property: "presentValue" }
+      compressor_y2:    { object_type: "binary-output", instance: 2, property: "presentValue" }
+      fan_g:            { object_type: "binary-output", instance: 3, property: "presentValue" }
+
+influxdb:
+  url: "http://localhost:8086"
+  token: "thermvate-dev-token"
+  org: "thermvate"
+  bucket: "thermvate_data"
+  retention_days: 90
+
+safety:
+  min_setpoint_f: 60
+  max_setpoint_f: 80
+  min_stage_interval_s: 300
+  min_on_time_s: 180
+  min_off_time_s: 300
+  supply_air_max_f: 130
+  supply_air_min_f: 45
+
+weather:
+  provider: "open-meteo"
+  latitude: 43.0
+  longitude: -78.0
+  poll_interval_min: 15

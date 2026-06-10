@@ -1,0 +1,111 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "title": "ThermVate — Live Sensors",
+  "uid": "thermvate-live",
+  "version": 1,
+  "tags": ["thermvate", "hvac"],
+  "schemaVersion": 38,
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "title": "Per-Zone Temperature",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "query": "from(bucket: \"thermvate_data\") |> range(start: -6h) |> filter(fn: (r) => r._measurement == \"temperature\") |> aggregateWindow(every: 1m, fn: mean) |> pivot(rowKey:[\"_time\"], columnKey: [\"zone\"], valueColumn: \"_value\")",
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "fahrenheit",
+          "thresholds": {
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 62 },
+              { "color": "yellow", "value": 72 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Humidity",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "query": "from(bucket: \"thermvate_data\") |> range(start: -6h) |> filter(fn: (r) => r._measurement == \"humidity\") |> aggregateWindow(every: 1m, fn: mean) |> pivot(rowKey:[\"_time\"], columnKey: [\"zone\"], valueColumn: \"_value\")",
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 }
+      }
+    },
+    {
+      "title": "CO₂ (ppm)",
+      "type": "timeseries",
+      "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "query": "from(bucket: \"thermvate_data\") |> range(start: -6h) |> filter(fn: (r) => r._measurement == \"co2\") |> aggregateWindow(every: 1m, fn: mean) |> pivot(rowKey:[\"_time\"], columnKey: [\"zone\"], valueColumn: \"_value\")",
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ppm", "min": 400, "max": 2000 }
+      }
+    },
+    {
+      "title": "Outdoor Temperature",
+      "type": "stat",
+      "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "query": "from(bucket: \"thermvate_data\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"temperature\" and r.zone == \"outdoor\") |> last()",
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "fahrenheit",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 50 },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Equipment State (BACnet)",
+      "type": "table",
+      "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "query": "from(bucket: \"thermvate_data\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"equipment\") |> last() |> pivot(rowKey:[\"_time\"], columnKey: [\"point\"], valueColumn: \"_value\")",
+          "refId": "A",
+          "datasource": { "type": "influxdb", "uid": "ThermVate InfluxDB" }
+        }
+      ]
+    }
+  ]
+}

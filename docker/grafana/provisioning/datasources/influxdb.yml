@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: ThermVate InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    isDefault: true
+    jsonData:
+      version: Flux
+      organization: thermvate
+      defaultBucket: thermvate_data
+      tlsSkipVerify: true
+    secureJsonData:
+      token: thermvate-dev-token
