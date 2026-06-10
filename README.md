@@ -20,7 +20,7 @@
 
 ## Quick Start (Docker — No Hardware Required)
 
-Test the full pipeline on your laptop immediately — no sensors, no RPi, no BACnet gear:
+Test the full pipeline on your computer immediately — no sensors, no RPi, no BACnet gear:
 
 ```bash
 git clone https://github.com/TheRandyBee/thermvate.git
@@ -254,7 +254,7 @@ Total: **$172–$289** for a 3-zone system. See [hardware/bill-of-materials.md](
 
 ## Development Roadmap
 
-- ✅ **Phase 0** (Docker Dev Stack): Orchestrator, MQTT, InfluxDB, Grafana, sensor simulator — all running on your laptop
+- ✅ **Phase 0** (Docker Dev Stack): Orchestrator, MQTT, InfluxDB, Grafana, sensor simulator — all running on your computer
 - 🔄 **Phase 1** (MVP): Sensor deployment, data pipeline, passive thermal modeling, advisory UI (in progress)
 - ⬜ **Phase 2**: Active setpoint optimization, occupancy prediction, predictive maintenance
 - ⬜ **Phase 3**: Multi-zone staging, heat pump optimization, demand response
