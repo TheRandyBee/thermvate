@@ -4,12 +4,12 @@
 
 BACnet is the most common communication protocol in commercial and high-end residential HVAC. If your equipment has a communicating thermostat or zoning system, it almost certainly has a BACnet MS/TP port.
 
-ThermVate uses **BAC0** (brought to you by Christian Tremblay), a mature open-source BACnet Python stack, to discover devices, read points, and write setpoints over BACnet/IP. A wireless MS/TP bridge like the CWCVT converts your equipment's MS/TP serial bus to WiFi, eliminating the need for a serial cable run. **(Note: I have access to a CWCVT at work — may purchase one or use a direct serial alternative for the project.)**
+ThermVate uses **BAC0** (brought to you by Christian Tremblay), a mature open-source BACnet Python stack, to discover devices, read points, and write setpoints over BACnet/IP. A wireless MS/TP bridge like the CWCVT converts your equipment's MS/TP serial bus to WiFi, eliminating the need for a serial cable run.
 
 ## Prerequisites
 
 - HVAC equipment with BACnet MS/TP port (check the control board for 3-pin terminal labeled "BUS A/B" or "MS/TP")
-- CWCVT wireless MS/TP router (or equivalent — access at work, may purchase) OR direct RS-485 serial adapter as alternative
+- CWCVT wireless MS/TP router (or equivalent BACnet bridge) OR direct RS-485 serial adapter as alternative
 - Network connectivity between CWCVT and RPi orchestrator
 
 ## CWCVT Setup

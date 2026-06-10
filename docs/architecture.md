@@ -44,7 +44,6 @@ The HAL presents a **unified equipment API** — the orchestrator calls `set_set
 - Most common on JCI, Carrier, Trane, Lennox, Daikin communicating systems
 - Wireless bridge (CWCVT or similar) converts MS/TP serial → WiFi → BACnet/IP
 - BAC0 Python library discovers and reads/writes points
-- **Note:** I have access to a CWCVT at work — may purchase one or use direct RS-485 serial as an alternative for the project
 - **Available points:** supply/return temp, outdoor temp, compressor stages, fan status, economizer position, leaving water temp, defrost state, error codes, runtime hours
 
 #### Modbus RTU

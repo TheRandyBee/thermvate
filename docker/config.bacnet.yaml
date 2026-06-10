@@ -32,7 +32,7 @@ mqtt:
 hal:
   type: "bacnet"
   bacnet:
-    cwcvt_ip: "192.168.1.50"       # BACnet bridge IP (CWCVT at work — may purchase)
+    cwcvt_ip: "192.168.1.50"       # BACnet bridge IP
     bacnet_port: 47808
     device_instance: 18001         # ⚠️  SET YOUR EQUIPMENT DEVICE INSTANCE
     mstp_baud: 38400

@@ -201,7 +201,7 @@ All models run on-device (RPi 5 or NUC). No cloud inference required.
 
 ## BACnet Integration
 
-ThermVate communicates with equipment over BACnet/IP, typically via a CWCVT wireless MS/TP bridge (access at work, may need to purchase one or an alternative):
+ThermVate communicates with equipment over BACnet/IP via a CWCVT wireless MS/TP bridge (or equivalent BACnet/IP gateway):
 
 ```python
 from orchestrator.src.hal import HardwareAbstractionLayer
@@ -243,8 +243,8 @@ The orchestrator enforces: minimum setpoint 60°F, maximum 80°F, 5-minute minim
 |-----------|------|-----------|
 | RPi 5 (4GB+) or NUC | $60–$200 | ✅ Core compute |
 | ESP32 + BME280 sensor | ~$8/room | For zonal temp/humidity |
-| CWCVT MSTP WiFi bridge | ~$200 | To talk BACnet over WiFi (access at work, may purchase) |
-| Direct RS-485 adapter | ~$15 | Alternative: serial MS/TP to USB (no CWCVT needed) |
+| CWCVT MSTP WiFi bridge | ~$200 | To talk BACnet over WiFi |
+| Direct RS-485 adapter | ~$15 | Alternative: serial MS/TP to USB |
 | 4-ch relay board (Sainsmart) | ~$15 | For 24V equipment override |
 | MQTT Broker (Mosquitto) | Free | Bundled in setup |
 

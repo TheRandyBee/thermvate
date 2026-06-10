@@ -7,7 +7,7 @@ This guide walks you through setting up the ThermVate orchestrator on a Raspberr
 - Raspberry Pi 5 (4GB+) running **Raspberry Pi OS Lite** (64-bit, Bookworm)
 - MicroSD card (32GB+ recommended) or NVMe SSD
 - Network connectivity (WiFi or Ethernet)
-- CWCVT wireless MS/TP router configured and on your network (access at work — may need to purchase one or use a direct RS-485 adapter as an alternative)
+- CWCVT wireless MS/TP router configured and on your network (or equivalent BACnet bridge)
 - ESP32 sensor nodes (optional but recommended)
 
 ## Automated Setup

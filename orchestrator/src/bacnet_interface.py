@@ -2,7 +2,7 @@
 ThermVate — BACnet Interface via BAC0
 
 Reads equipment data and writes setpoints over BACnet/IP through
-a BACnet bridge (CWCVT wireless MS/TP bridge — access at work, may purchase).
+a BACnet bridge (CWCVT wireless MS/TP bridge).
 
 Uses the BAC0 open-source Python library (bacpypes under the hood).
 BACnet MS/TP → BACnet bridge → WiFi → BACnet/IP → BAC0 → ThermVate

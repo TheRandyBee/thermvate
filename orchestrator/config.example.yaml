@@ -55,7 +55,7 @@ hal:
 
 # ── BACnet (via BAC0 + CWCVT or equivalent) ──
   bacnet:
-    cwcvt_ip: "192.168.1.50"    # BACnet bridge IP (CWCVT at work — may purchase one)
+    cwcvt_ip: "192.168.1.50"    # BACnet bridge IP
     bacnet_port: 47808           # Default BACnet/IP UDP port
     device_instance: 18001       # Your equipment's BACnet device instance
     mstp_baud: 38400             # Must match CWCVT config

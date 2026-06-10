@@ -34,7 +34,8 @@ Choose ONE based on what your HVAC equipment supports:
 
 | Item | Est. Cost | Notes |
 |------|-----------|-------|
-| CWCVT Wireless MS/TP Router | ~$200 | BACnet MS/TP ←→ WiFi bridge (access at work, may purchase) |
+| CWCVT Wireless MS/TP Router | ~$200 | BACnet MS/TP ←→ WiFi bridge |
+| Option: Babel Buster Pro | $400 | Alternative BACnet gateway |
 | Option: Babel Buster Pro | $400 | Alternative BACnet gateway |
 | Direct RS-485 adapter | $15 | FTDI USB-to-RS485 for direct MS/TP serial (no CWCVT needed) |
 | RJ12 / 3-pin terminal cable | $10 | MS/TP connection |
