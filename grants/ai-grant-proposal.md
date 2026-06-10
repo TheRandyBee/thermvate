@@ -3,8 +3,32 @@
 ## Grant Proposal Draft
 
 **Target Program:** AI Grant (aigrant.org) — $5k–$50k open source AI projects  
-**Status:** Draft for review  
-**Submitted by:** [Your Name / GitHub handle]
+**Status:** Ready for submission  
+**Submitted by:** TheRandyBee (github.com/TheRandyBee)  
+
+---
+
+## Current Project Status (built before grant funding)
+
+This proposal asks for funding to expand and harden a **working MVP** that already exists:
+
+| Deliverable | Status | Detail |
+|-------------|--------|--------|
+| Orchestrator with async lifecycle | ✅ Done | MQTT ingestion, BAC0 integration, graceful shutdown |
+| MQTT sensor bridge | ✅ Done | ESPHome ingestion, auto-parse, alarm routing |
+| BACnet interface via CWCVT | ✅ Done | BAC0 read/write, point discovery, equipment profiles |
+| Hardware Abstraction Layer | ✅ Done | Unified API over BACnet/Modbus/dry-contact |
+| InfluxDB time-series storage | ✅ Done | v1 + v2, write + query |
+| Safety enforcer | ✅ Done | Setpoint bounds, staging rate limits, supply air checks |
+| Thermal dynamics model | ✅ Done | Prophet + GBRT ensemble, ONNX-capable |
+| Docker Compose dev stack | ✅ Done | 5 services, auto-setup, Grafana dashboards |
+| Sensor simulator | ✅ Done | Realistic fake data for testing without hardware |
+| Health API | ✅ Done | FastAPI, Docker health checks, /status, /zones |
+| one-command RPi setup script | ✅ Done | Installs everything: Mosquitto, InfluxDB, venv, systemd |
+
+**GitHub:** [github.com/TheRandyBee/thermvate](https://github.com/TheRandyBee/thermvate) — 35+ files, ~3,000 lines, MIT licensed.
+
+Grant funding would accelerate the remaining phases (optimization engine, occupancy predictor, predictive maintenance, community equipment profiles) and fund the developer stipend.
 
 ---
 
@@ -155,7 +179,7 @@ ThermVate is an equipment-agnostic AI orchestrator that runs on a Raspberry Pi 5
 
 ## Team
 
-[Your Name] — HVAC/BAS controls engineer with JCI experience, residential and commercial commissioning. Domain expertise in BACnet MS/TP, VRF systems, heat pump staging, and building thermal dynamics. Building a home AI lab for independent AI+HVAC research.
+**Randy** (github.com/TheRandyBee) — HVAC/BAS controls engineer with JCI experience, residential and commercial commissioning. Domain expertise in BACnet MS/TP, VRF systems, heat pump staging, and building thermal dynamics. Building a home AI lab for independent AI+HVAC research.
 
 ---
 
@@ -188,4 +212,4 @@ ThermVate uses the open-source BAC0 Python library to discover and read these po
 
 ---
 
-*Draft prepared June 2026. Ready for review and tailoring.*
+*Draft updated June 2026. Ready for submission.*
