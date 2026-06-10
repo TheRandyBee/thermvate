@@ -243,12 +243,11 @@ The orchestrator enforces: minimum setpoint 60°F, maximum 80°F, 5-minute minim
 |-----------|------|-----------|
 | RPi 5 (4GB+) or NUC | $60–$200 | ✅ Core compute |
 | ESP32 + BME280 sensor | ~$8/room | For zonal temp/humidity |
-| CWCVT MSTP WiFi bridge | ~$200 | To talk BACnet over WiFi |
-| Direct RS-485 adapter | ~$15 | Alternative: serial MS/TP to USB |
+| BACnet bridge (CWCVT or equivalent) | ~$15–$200 | To talk BACnet over IP (WiFi bridge or direct RS-485) |
 | 4-ch relay board (Sainsmart) | ~$15 | For 24V equipment override |
 | MQTT Broker (Mosquitto) | Free | Bundled in setup |
 
-Total: **$172–$289** for a 3-zone system. See [hardware/bill-of-materials.md](hardware/bill-of-materials.md).
+Total: **$162–$357** for a 3-zone BACnet system. See [hardware/bill-of-materials.md](hardware/bill-of-materials.md).
 
 ---
 
